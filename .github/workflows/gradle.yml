@@ -18,17 +18,24 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Container start
-        run: docker-compose up -d
+      - name: Start MySQL Container
+        run: docker compose up -d --wait --wait-timeout 60
 
-      - name: Waiting for container start
-        run: sleep 30
+      - name: Check container status and logs
+        if: failure()
+        run: |
+          docker compose ps
+          docker compose logs mysqldb
 
       - name: Start SUT
-        run: java -jar ./artifacts/app-deadline.jar -P:jdbc.url=jdbc:mysql://localhost:3306/app -P:jdbc.user=app -P:jdbc.password=pass &
+        run: |
+          java -jar ./artifacts/app-deadline.jar \
+            -P:jdbc.url=jdbc:mysql://localhost:3306/app \
+            -P:jdbc.user=app \
+            -P:jdbc.password=pass &
 
       - name: Wait for SUT
-        run: sleep 15
+        run: sleep 30
       
-      - name: Build with Gradle
+      - name: Run tests
         run: ./gradlew test -Dselenide.headless=true --info
