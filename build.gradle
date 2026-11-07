@@ -23,4 +23,5 @@ test {
     useJUnitPlatform()
     systemProperty 'selenide.headless', System.getProperty('selenide.headless', 'false')
     systemProperty 'chromeoptions.args', '--no-sandbox --disable-dev-shm-usage --disable-gpu'
+    systemProperty 'chromeoptions.prefs', System.getProperty('chromeoptions.prefs', 'profile.password_manager_leak_detection=false')
 }
